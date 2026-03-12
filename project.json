@@ -1,0 +1,205 @@
+{
+  "projectName": "CyberSentinel",
+  "projectType": "Cybersecurity Threat Intelligence Dashboard",
+  "version": "1.0.0",
+  "lastUpdated": "2024-03-10",
+  "status": "Production Ready (Setup Pending)",
+  
+  "tech": {
+    "frontend": {
+      "framework": "React 19",
+      "bundler": "Vite 7",
+      "language": "JavaScript (JSX)",
+      "styling": "CSS-in-JS (inline styles)"
+    },
+    "backend": {
+      "database": "PocketBase (localhost:8090)",
+      "auth": "PocketBase built-in",
+      "realtimeUpdates": "WebSocket"
+    },
+    "externalAPIs": [
+      {
+        "name": "AbuseIPDB",
+        "endpoint": "https://api.abuseipdb.com/api/v2/",
+        "purpose": "Threat data (malicious IPs)",
+        "frequency": "Every 5 minutes"
+      },
+      {
+        "name": "IP-API.co",
+        "endpoint": "https://ipapi.co/",
+        "purpose": "IP Geolocalizzazione",
+        "frequency": "On demand"
+      }
+    ]
+  },
+
+  "features": {
+    "implemented": [
+      "Login/Logout with PocketBase",
+      "Real-time threat map (Leaflet)",
+      "Live threat feed",
+      "Analytics dashboard (Recharts)",
+      "User watchlists",
+      "Automatic API polling (5 min intervals)",
+      "Country-based filtering",
+      "Risk score visualization"
+    ],
+    "planned": [
+      "Desktop notifications",
+      "Dark/Light theme",
+      "Mobile responsive",
+      "PDF/CSV export",
+      "IP whitelisting",
+      "Advanced search",
+      "Threat history"
+    ]
+  },
+
+  "structure": {
+    "src": {
+      "components": [
+        "WorldMap.jsx",
+        "ThreatFeed.jsx",
+        "StatsDashboard.jsx"
+      ],
+      "pages": [
+        "Dashboard.jsx",
+        "AuthPage.jsx"
+      ],
+      "services": [
+        "pocketbaseService.js",
+        "abuseIPDBService.js",
+        "ipGeoService.js",
+        "threatPollingService.js"
+      ],
+      "hooks": [
+        "useRealTime.js"
+      ],
+      "utils": [
+        "mockData.js",
+        "constants.js"
+      ]
+    }
+  },
+
+  "dependencies": {
+    "main": {
+      "react": "^19.2.0",
+      "react-dom": "^19.2.0",
+      "pocketbase": "^0.21.0",
+      "react-leaflet": "^4.2.1",
+      "leaflet": "^1.9.4",
+      "recharts": "^2.10.3",
+      "axios": "^1.6.2",
+      "react-router-dom": "^6.20.1",
+      "lucide-react": "^0.404.0"
+    }
+  },
+
+  "collections": {
+    "users": {
+      "auto": true,
+      "fields": [
+        "email (Text)",
+        "password (Text)",
+        "...standard PocketBase fields"
+      ]
+    },
+    "threats": {
+      "fields": [
+        "ip (Text, required)",
+        "country_code (Text, required)",
+        "country_name (Text, required)",
+        "latitude (Number, required)",
+        "longitude (Number, required)",
+        "abuse_score (Number, required)",
+        "description (Text, optional)"
+      ]
+    },
+    "watchlists": {
+      "fields": [
+        "user (Relation→users, required)",
+        "country_to_monitor (Text, required)",
+        "min_score (Number, required)"
+      ]
+    }
+  },
+
+  "apis": {
+    "abuseIPDB": {
+      "key": "sentinel (hardcoded, use env var in prod)",
+      "endpoints": [
+        "GET /report - Latest malicious IPs",
+        "GET /check - Check single IP",
+        "POST /report - Report an IP"
+      ],
+      "rateLimit": "Free: 1000/day, Paid: 10k-unlimited"
+    },
+    "ipapi": {
+      "endpoints": [
+        "GET /{ip}/json/ - Geolocation data"
+      ],
+      "auth": "None (free)",
+      "rateLimit": "~5000/month"
+    }
+  },
+
+  "configuration": {
+    "env": {
+      "VITE_POCKETBASE_URL": "http://127.0.0.1:8090",
+      "VITE_ABUSEIPDB_API_KEY": "your_key_here",
+      "VITE_POLLING_INTERVAL_MINUTES": 5,
+      "VITE_ENV": "development"
+    }
+  },
+
+  "documentation": {
+    "quickStart": "README.md",
+    "fullSetup": "SETUP_GUIDE.md",
+    "database": "POCKETBASE_SETUP.md",
+    "abuseIPDB": "ABUSEIPDB_SETUP.md",
+    "checklist": "SETUP_CHECKLIST.md",
+    "summary": "COMPLETION_SUMMARY.md"
+  },
+
+  "ports": {
+    "viteDevServer": 5173,
+    "pocketbaseAdmin": 8090
+  },
+
+  "commands": {
+    "dev": "npm run dev",
+    "build": "npm run build",
+    "preview": "npm run preview",
+    "lint": "npm run lint"
+  },
+
+  "dataFlow": {
+    "step1": "User logs in with email/password",
+    "step2": "PocketBase authenticates and returns auth token",
+    "step3": "Frontend loads Dashboard and subscribes to real-time updates",
+    "step4": "threatPollingService starts polling every 5 minutes",
+    "step5": "Fetches latest malicious IPs from AbuseIPDB",
+    "step6": "Geolocalizes IP addresses",
+    "step7": "Creates records in PocketBase threats collection",
+    "step8": "PocketBase notifies via WebSocket",
+    "step9": "React updates Map, Feed, and Stats in real-time",
+    "step10": "User can filter by country watchlist and risk threshold"
+  },
+
+  "nextSteps": [
+    "1. Configure PocketBase database (collections & user)",
+    "2. Add AbuseIPDB API key to .env.local",
+    "3. Verify all features work (login, map, feed, stats)",
+    "4. Add countries to watchlist for monitoring",
+    "5. Wait for first polling cycle (5 minutes)",
+    "6. Customize colors and filters as needed",
+    "7. Deploy to production when ready"
+  ],
+
+  "support": {
+    "issues": "Check SETUP_CHECKLIST.md for troubleshooting",
+    "api": "See ABUSEIPDB_SETUP.md for API details",
+    "database": "See POCKETBASE_SETUP.md for DB config"
+  }
+}
